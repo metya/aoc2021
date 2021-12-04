@@ -1,4 +1,5 @@
---- Day 2: Dive! ---
+
+### --- Day 2: Dive! ---
 
 Now, you need to figure out how to pilot this thing.
 
@@ -37,7 +38,7 @@ Calculate the horizontal position and depth you would have after following the p
 
 The first half of this puzzle is complete! It provides one gold star: *
 
---- Part Two ---
+### --- Part Two ---
 
 Based on your calculations, the planned course doesn't seem to make any sense. You find the submarine manual and discover that the process is actually slightly more complicated.
 
