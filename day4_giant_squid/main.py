@@ -28,7 +28,8 @@ def part1(input: str):
                 board[board == -1] = 0
                 board.sum()
                 print(
-                    f"Sum of all unmarked numbers is {board.sum()} and last number is {num} at the round {round}"
+                    f"Sum of all unmarked numbers is {board.sum()} \
+                        and last number is {num} at the round {round}"
                 )
                 print(f"And the anwser of part1 is: {board.sum() * num}")
                 return
