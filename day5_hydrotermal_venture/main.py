@@ -22,16 +22,14 @@ def draw_lines(input: str, diag: bool = False) -> int:
     field = np.zeros([size + 1, size + 1])
     coords = coords.reshape(coords.shape[0], 2, 2)
 
-    for cp in coords:
-        if (p1 := cp[0][0]) == (cp[1][0]):
-            field[min(cp[0][1], cp[1][1]) : max(cp[0][1], cp[1][1]) + 1, p1] += 1
-        elif (p1 := cp[0][1]) == (cp[1][1]):
-            field[p1, min(cp[0][0], cp[1][0]) : max(cp[0][0], cp[1][0]) + 1] += 1
+    for (x, y), (X, Y) in coords:
+        if x == X:
+            field[min(y, Y) : max(y, Y) + 1, x] += 1
+        elif y == Y:
+            field[y, min(x, X) : max(x, X) + 1] += 1
         elif diag:
-            mat = field[
-                cp[:, 1].min() : cp[:, 1].max() + 1, cp[:, 0].min() : cp[:, 0].max() + 1
-            ]
-            if cp[1].sum() == cp[0].sum():
+            mat = field[min(y, Y) : max(y, Y) + 1, min(x, X) : max(x, X) + 1]
+            if x + y == X + Y:
                 np.fliplr(mat).flat[:: mat.shape[0] + 1] += 1
             else:
                 mat.flat[:: mat.shape[0] + 1] += 1
