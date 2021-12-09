@@ -1,16 +1,8 @@
 [package]
-name = "day8_seven_segment_search"
+name = "day9_smoke_basin"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-counter = "0.5.2"
-
-[dev-dependencies]
-criterion = "0.3"
-
-[[bench]]
-name = "my_bench"
-harness = false

@@ -2,16 +2,9 @@
 #![allow(unused_variables)]
 use ::counter::Counter;
 use ::std::collections::HashMap;
-use std::time::Instant;
 
-fn main() {
-    let time = Instant::now();
-    solve();
-    let end = time.elapsed().as_nanos() as f64 / 1_000_000.0;
-    println!("time {:.4} ms", end)
-}
-
-fn solve() {
+#[inline]
+pub fn solve_p() {
     let input: Vec<&str> = include_str!("../input.txt").lines().collect();
     let example: Vec<&str> = include_str!("../example.txt").lines().collect();
     let canonical_pattern = "abcefg cf acdeg acdfg bdcf abdfg abdefg acf abcdefg abcdfg";
@@ -55,8 +48,8 @@ fn solve() {
                 .unwrap()
         })
         .sum::<usize>();
-    println!("The asnwer of part1 is: {}", part1);
-    println!("The asnwer of part1 is: {}", part2);
+    // println!("The asnwer of part1 is: {}", part1);
+    // println!("The asnwer of part1 is: {}", part2);
 }
 
 fn get_key(code: &str, counter: &Counter<char>) -> usize {
