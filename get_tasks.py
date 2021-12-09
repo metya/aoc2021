@@ -18,7 +18,8 @@ def generate_readme(task_dir, day):
         soup = bs4.BeautifulSoup(
             requests.get(
                 f"https://adventofcode.com/2021/day/{day}", cookies=cookies_dict
-            ).content
+            ).content,
+            features="html.parser",
         )
         with open(readme_path, "w") as readme:
             readme.write(md.markdownify(str(soup.find_all("article")[0])))
@@ -55,7 +56,8 @@ def get_input(task_dir, day):
         example = bs4.BeautifulSoup(
             requests.get(
                 f"https://adventofcode.com/2021/day/{day}", cookies=cookies_dict
-            ).content
+            ).content,
+            features="html.parser",
         ).code.text
 
         with open(example_path, "w") as f:
