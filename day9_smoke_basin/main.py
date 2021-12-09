@@ -1,6 +1,8 @@
 import os, sys
 import numpy as np
 from functools import partial
+from scipy.ndimage.measurements import label
+
 
 task_dir = os.path.dirname(__file__)
 sys.path.append(f"{task_dir}/..")
@@ -17,7 +19,7 @@ def part1(cave: np.ndarray) -> np.ndarray:
     for i in range(cave.shape[0]):
         for j in range(cave.shape[1]):
             if (here := cave[i, j]) == (
-                win := cave[max(0, i - 1) : i + 2, max(0, j - 1) : j + 2]
+                cave[max(0, i - 1) : i + 2, max(0, j - 1) : j + 2]
             ).min():
                 mins = np.append(mins, here)
                 centers = np.vstack([centers, [i, j]])
@@ -26,7 +28,19 @@ def part1(cave: np.ndarray) -> np.ndarray:
     return centers
 
 
-def part2(cave: np.ndarray, centers_basins: np.ndarray):
+def part2(cave: np.ndarray, centers_basins: np.ndarray, scipy=False, verbose=True):
+
+    # solve with cheats!
+    if scipy:
+        labels, count = label(cave != 9)
+        return (
+            np.sort(np.unique(labels[np.where(labels > 0)], return_counts=1)[1])[
+                -3:
+            ].prod(),
+            count,
+        )
+
+    # solve without cheats
     def get_dirs(center):
         i, j = center
         up = max(0, i - 1), j
@@ -35,11 +49,12 @@ def part2(cave: np.ndarray, centers_basins: np.ndarray):
         right = i, min(j_size, j + 1)
         return up, left, down, right
 
+    i_size, j_size = cave.shape
+    i_size, j_size = i_size - 1, j_size - 1
+
     for idx, center in enumerate(centers_basins):
         queue = []
         i, j = center
-        i_size, j_size = cave.shape
-        i_size, j_size = i_size - 1, j_size - 1
 
         queue.append((i, j))
         cave[i, j] = idx + 11
@@ -50,10 +65,13 @@ def part2(cave: np.ndarray, centers_basins: np.ndarray):
                 if cave[dir] < 9:
                     cave[dir] = idx + 11
                     queue.append(dir)
-    print(
-        "The answer of part2 is:",
-        np.sort(np.unique(cave[np.where(cave > 10)], return_counts=1)[1])[-3:].prod(),
-    )
+
+    basins = np.sort(np.unique(cave[np.where(cave > 10)], return_counts=1)[1])
+
+    if verbose:
+        print("The answer of part2 is:", basins[-3:].prod())
+
+    return basins, cave, idx
 
 
 if __name__ == "__main__":
