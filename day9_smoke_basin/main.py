@@ -20,7 +20,7 @@ def part1(cave: np.ndarray) -> np.ndarray:
         for j in range(cave.shape[1]):
             if (here := cave[i, j]) == (
                 cave[max(0, i - 1) : i + 2, max(0, j - 1) : j + 2]
-            ).min():
+            ).min() and here != 9:
                 mins = np.append(mins, here)
                 centers = np.vstack([centers, [i, j]])
     centers = np.delete(centers, 0, 0)
