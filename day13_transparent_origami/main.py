@@ -17,20 +17,16 @@ def folding(input: list[str]) -> tuple[int, np.ndarray]:
     )
     instructions = [line[11:].split("=") for line in input if line.startswith("f")]
     x, y = 0, 0
-    for os, c in instructions:
-        if os == "y":
-            x = int(c) * 2 + 1
-        if os == "x":
-            y = int(c) * 2 + 1
-        if x != 0 and y != 0:
-            paper = np.zeros((x, y), dtype=np.int8)
-            break
+    for inst in instructions:
+        match inst:
+            case ["y", c]: x = int(c) * 2 + 1
+            case ["x", c]: y = int(c) * 2 + 1
+        if x != 0 and y != 0: paper = np.zeros((x, y), dtype=np.int8); break
     paper[coords[:, 0], coords[:, 1]] = 1
-    for step, (os, c) in enumerate(instructions):
-        if os == "y":
-            paper = paper[: int(c)] + np.flipud(paper[int(c) + 1 :])
-        if os == "x":
-            paper = paper[:, : int(c)] + np.fliplr(paper[:, int(c) + 1 :])
+    for step, inst in enumerate(instructions):
+        match inst:
+            case ["y", c]: paper = paper[: int(c)] + np.flipud(paper[int(c) + 1 :])
+            case ["x", c]: paper = paper[:, : int(c)] + np.fliplr(paper[:, int(c) + 1 :])
         if step == 0:
             part1 = np.where(paper > 0, 1, 0).sum()
     part2 = np.where(paper > 0, "#", ".")
