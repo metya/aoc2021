@@ -5,7 +5,7 @@ import markdownify as md
 from typing import Any, Callable
 
 
-def generate_readme(task_dir, day):
+def generate_readme(task_dir: str, day: int):
 
     readme_path = os.path.join(task_dir, "README.md")
     cookies_dict = {
@@ -28,7 +28,7 @@ def generate_readme(task_dir, day):
                 readme.write(md.markdownify(str(soup.find_all("article")[1])))
 
 
-def get_input(task_dir, day):
+def get_input(task_dir: str, day: int) -> tuple[list[str], list[str]]:
     input_path = os.path.join(task_dir, "input.txt")
     example_path = os.path.join(task_dir, "example.txt")
 
@@ -38,20 +38,18 @@ def get_input(task_dir, day):
 
     if os.path.exists(input_path):
         with open(input_path, "r") as f:
-            input = f.readlines()
+            input = f.read().splitlines()
     else:
         input = requests.get(
             f"https://adventofcode.com/2021/day/{day}/input", cookies=cookies_dict
         ).text
-
         with open(input_path, "w") as f:
             f.write(input)
-
         input = input.splitlines()
 
     if os.path.exists(example_path):
         with open(example_path, "r") as e:
-            example = e.readlines()
+            example = e.read().splitlines()
     else:
         example = bs4.BeautifulSoup(
             requests.get(
@@ -62,7 +60,6 @@ def get_input(task_dir, day):
 
         with open(example_path, "w") as f:
             f.write(example)
-
         example = example.splitlines()
 
     return input, example
