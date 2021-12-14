@@ -36,6 +36,8 @@ def get_input(task_dir: str, day: int) -> tuple[list[str], list[str]]:
         "session": "53616c7465645f5ffe3db8d154199da4d6e4e569142fda21d3350f5e550f2a4c509bd1b147264ffe0a0d2124909ec5d6"
     }
 
+    os.makedirs(task_dir, exist_ok=True)
+
     if os.path.exists(input_path):
         with open(input_path, "r") as f:
             input = f.read().splitlines()
