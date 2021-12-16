@@ -61,13 +61,14 @@ def dijkstra(G, start=(0, 0), end=False, pq=True, star=False):
     return get_path(end), nodeCosts[end]
 
 
-def part1(input: list[str]):
+def part1(input: list[str], verbose=True):
     ceiling = np.array([list(line) for line in input], dtype=int)
     _, cost = dijkstra(ceiling)
-    print("The answer of part1 is:", cost)
+    if verbose:
+        print("The answer of part1 is:", cost)
 
 
-def part2(input: list[str], pq=True, star=False):
+def part2(input: list[str], pq=True, star=False, verbose=True):
     ceiling = np.array([list(line) for line in input], dtype=int)
     full_ceiling = ceiling.copy()
     for step in range(1, 5):
@@ -80,7 +81,8 @@ def part2(input: list[str], pq=True, star=False):
         down_ceiling[down_ceiling > 9] -= 9
         full_ceiling = np.vstack([full_ceiling, down_ceiling])
     _, cost = dijkstra(full_ceiling, pq=pq, star=star)
-    print("The answer of part2 is:", cost)
+    if verbose:
+        print("The answer of part2 is:", cost)
 
 
 if __name__ == "__main__":

@@ -2,7 +2,7 @@ import os, sys
 
 task_dir = os.path.dirname(__file__)
 sys.path.append(f"{task_dir}/..")
-from functools import reduce
+from math import prod
 from get_tasks import get_input, generate_readme, check_example
 
 
@@ -31,7 +31,7 @@ def read_header():
 def read_op():
     global cur
     litsub = []
-    if b[cur : cur + 1] == "0":
+    if b[cur] == "0":
         cur += 1
         nbits = int(b[cur : cur + 15], 2)
         cur += 15
@@ -56,30 +56,32 @@ def parse_block():
     match typeID:
         case 4: return read_litval()
         case 0: return sum(read_op())
-        case 1: return reduce(lambda x, y: x * y, read_op(), 1)
+        case 1: return prod(read_op())
         case 2: return min(read_op())
         case 3: return max(read_op())
         case 5: subs = read_op(); return 1 if subs[0] > subs[1] else 0
         case 6: subs = read_op(); return 1 if subs[0] < subs[1] else 0
         case 7: subs = read_op(); return 1 if subs[0] == subs[1] else 0
 
-def part1(input):
+def part1(input, verbose=True):
     global b, cur, sumpackver
     cur = 0
     sumpackver = 0
     packet = input[0]
     b = bin(int(packet, 16))[2:].zfill(len(packet)*4)
     parse_block()
-    print("The answer of part1 is:", sumpackver)
+    if verbose:
+        print("The answer of part1 is:", sumpackver)
     
-def part2(input):
+def part2(input, verbose=True):
     global b, cur, sumpackver
     cur = 0
     sumpackver = 0
     packet = input[0]
     b = bin(int(packet, 16))[2:].zfill(len(packet)*4)
     val = parse_block()
-    print("The answer of part1 is:", val)
+    if verbose:
+        print("The answer of part1 is:", val)
 
 if __name__ == "__main__":
     
