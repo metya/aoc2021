@@ -48,8 +48,6 @@ pub fn solve_p() {
                 .unwrap()
         })
         .sum::<usize>();
-    // println!("The asnwer of part1 is: {}", part1);
-    // println!("The asnwer of part1 is: {}", part2);
 }
 
 fn get_key(code: &str, counter: &Counter<char>) -> usize {
