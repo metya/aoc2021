@@ -2,6 +2,7 @@ import os
 import requests
 import bs4
 import markdownify as md
+import time
 from typing import Any, Callable
 
 
@@ -65,6 +66,16 @@ def get_input(task_dir: str, day: int) -> tuple[list[str], list[str]]:
         example = example.splitlines()
 
     return input, example
+
+
+def bench(part):
+    def wrapper(*args, **kwargs):
+        start = time.perf_counter()
+        value = part(*args, **kwargs)
+        print(f"\tevaluation time: {time.perf_counter() - start}s")
+        return value
+
+    return wrapper
 
 
 def check_example(example: Any, part: Callable):
