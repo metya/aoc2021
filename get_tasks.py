@@ -72,7 +72,7 @@ def bench(part):
     def wrapper(*args, **kwargs):
         start = time.perf_counter()
         value = part(*args, **kwargs)
-        print(f"\tevaluation time: {time.perf_counter() - start}s")
+        print(f"\tevaluation time: {time.perf_counter() - start} s")
         return value
 
     return wrapper

@@ -6,6 +6,7 @@ import numpy as np
 from get_tasks import get_input, generate_readme, check_example, bench
 from itertools import takewhile
 from scipy import ndimage
+from numpy.lib.stride_tricks import sliding_window_view
 
 
 def parse(input, test=False):
@@ -15,58 +16,65 @@ def parse(input, test=False):
             .replace("#", "1")
             .replace(".", "0")
         )
+        code = np.array(list(code), dtype=int)
         image = np.array([list(line) for line in input[8:]])
     else:
-        code = input[0].replace("#", "1").replace(".", "0")
+        code = np.array(list(input[0].replace("#", "1").replace(".", "0")), dtype=int)
         image = np.array([list(line) for line in input[2:]])
     image[image == "."] = 0
     image[image == "#"] = 1
     return image.astype(int), code
 
 
-def naive_enhance_image(image, code, step):
-    if code[0] == "0":
-        pad = 0
-        val = pad
-    else:
-        pad = step % 2
-        val = 1 - pad
-    sp = 3 if step == 0 else 1
-    enhance_image = np.pad(image, sp, "constant", constant_values=pad)
-    enhanced_image = np.full_like(enhance_image, val, dtype=int)
-    for i in range(enhance_image.shape[0] - 2):
-        for j in range(enhance_image.shape[1] - 2):
-            win = enhance_image[i : i + 3, j : j + 3]
-            enhanced_image[i + 1, j + 1] = code[
-                int("".join(win.flatten().astype(str)), 2)
-            ]
-    return enhanced_image
+def naive_virgin_enhance_image(image, code, steps):
+    for step in range(steps):
+        match code[0]:
+            case 0: pad = 0; val = 0
+            case _: pad = step % 2; val = 1 - pad
+        sp = 3 if step == 0 else 1
+        enhance_image = np.pad(image, sp, constant_values=pad)
+        enhanced_image = np.full_like(enhance_image, val, dtype=int)
+        for i in range(enhance_image.shape[0] - 2):
+            for j in range(enhance_image.shape[1] - 2):
+                win = enhance_image[i : i + 3, j : j + 3]
+                enhanced_image[i + 1, j + 1] = code[
+                    win.flatten()[0] * 256 + np.packbits(win.flatten()[1:])
+                ]
+        image = enhanced_image
+    return image
 
 
-# works ony in test
-def scipy_enhance_image(image, code, outside=0):
-    def convert(values):
-        string = "".join(str(int(value)) for value in values)
-        return code[int(string, 2)]
+def true_vectorized_chad_enhance_image(image, code, steps, outside=0, pad_size=2):
+    for _ in range(steps):
+        image = np.pad(image, pad_size, constant_values=outside)
 
-    enhance_image = np.pad(image, 1)
-    ndimage.generic_filter(
-        enhance_image, convert, size=3, mode="constant", cval=outside
-    )
+        windows = sliding_window_view(image, (3, 3))
+        windows = windows.reshape(*windows.shape[:2], 9)
+        codes = windows[:, :, 0] * 256 + np.packbits(windows[:, :, 1:]).reshape(
+            windows.shape[:2]
+        )
+        image = code[codes]
+        outside = code[outside * 511]
+    return image
 
 
-def part1(input, test=False):
+@bench
+def part1(input, test=False, vec=True):
     image, code = parse(input, test)
-    for step in range(2):
-        image = naive_enhance_image(image, code, step)
+    if vec:
+        image = true_vectorized_chad_enhance_image(image, code, steps=2)
+    else:
+        image = naive_virgin_enhance_image(image, code, steps=2)
     print("The answer of part1 is:", image.sum())
 
 
 @bench
-def part2(input, test=False):
+def part2(input, test=False, vec=True):
     image, code = parse(input, test)
-    for step in range(50):
-        image = naive_enhance_image(image, code, step)
+    if vec:
+        image = true_vectorized_chad_enhance_image(image, code, steps=50)
+    else:
+        image = naive_virgin_enhance_image(image, code, steps=50)
     print("The answer of part2 is:", image.sum())
 
 
@@ -76,7 +84,7 @@ if __name__ == "__main__":
     part1(example, True)
     part2(example, True)
 
-    part1(input)
-    part2(input)
+    part1(input, vec=True)
+    part2(input, vec=True)
 
     generate_readme(task_dir, 20)
