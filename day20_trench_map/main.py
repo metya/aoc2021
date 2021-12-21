@@ -5,7 +5,7 @@ sys.path.append(f"{task_dir}/..")
 import numpy as np
 from get_tasks import get_input, generate_readme, check_example, bench
 from itertools import takewhile
-from scipy import ndimage
+from scipy.signal import convolve2d
 from numpy.lib.stride_tricks import sliding_window_view
 
 
@@ -58,22 +58,39 @@ def true_vectorized_chad_enhance_image(image, code, steps, outside=0, pad_size=2
     return image
 
 
+def literally_genious_conv_enhance_image(image, code, steps, outside=0):
+    kernel = np.array(
+    [
+        [ 1,  2,  4],
+        [ 8, 16, 32],
+        [64,128,256]
+    ]
+)   
+    for _ in range(steps):
+        image = code[convolve2d(image, kernel, fillvalue=outside)]
+        outside = code[outside*511]
+    return image
+
 @bench
-def part1(input, test=False, vec=True):
+def part1(input, test=False, method='conv_kernel'):
     image, code = parse(input, test)
-    if vec:
+    if method == 'conv_kernel':
+        image = literally_genious_conv_enhance_image(image, code, steps=2)
+    elif method == 'vectorized':
         image = true_vectorized_chad_enhance_image(image, code, steps=2)
-    else:
+    else: 
         image = naive_virgin_enhance_image(image, code, steps=2)
     print("The answer of part1 is:", image.sum())
 
 
 @bench
-def part2(input, test=False, vec=True):
+def part2(input, test=False, method='conv_kernel'):
     image, code = parse(input, test)
-    if vec:
+    if method == 'conv_kernel':
+        image = literally_genious_conv_enhance_image(image, code, steps=50)
+    elif method == 'vectorized':
         image = true_vectorized_chad_enhance_image(image, code, steps=50)
-    else:
+    else: 
         image = naive_virgin_enhance_image(image, code, steps=50)
     print("The answer of part2 is:", image.sum())
 
@@ -84,7 +101,7 @@ if __name__ == "__main__":
     part1(example, True)
     part2(example, True)
 
-    part1(input, vec=True)
-    part2(input, vec=True)
+    part1(input, method='conv_kernel')
+    part2(input, method='conv_kernel')
 
     generate_readme(task_dir, 20)
